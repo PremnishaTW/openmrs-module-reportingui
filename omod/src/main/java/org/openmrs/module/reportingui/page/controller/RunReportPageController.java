@@ -1,6 +1,7 @@
 package org.openmrs.module.reportingui.page.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.Concept;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -58,21 +59,35 @@ public class RunReportPageController {
 
         Collection<Parameter> missingParameters = new ArrayList<Parameter>();
         Map<String, Object> parameterValues = new HashMap<String, Object>();
+
         for (Parameter parameter : reportDefinition.getParameters()) {
-            String submitted = request.getParameter("parameterValues[" + parameter.getName() + "]");
-            if (parameter.getCollectionType() != null) {
-                throw new IllegalStateException("Collection parameters not yet implemented");
+	        if (parameter.getCollectionType() != null) {
+		        if (parameter.getType() == org.openmrs.Concept.class) {
+			        String[] submittedValues = request.getParameterValues("parameterValues[" + parameter.getName() + "]");
+			        Concept converted;
+			        List<Concept> conceptList = new ArrayList<Concept>();
+
+			        for (String submittedValue : submittedValues) {
+				        converted = (Concept) ui.convert(submittedValue, parameter.getType());
+				        conceptList.add(converted);
+			        }
+			        parameterValues.put(parameter.getName(), conceptList);
+		        } else {
+			        throw new IllegalStateException("Collection parameters not yet implemented");
+		        }
+	        } else {
+                String submitted = request.getParameter("parameterValues[" + parameter.getName() + "]");
+                Object converted;
+                if (StringUtils.isEmpty(submitted)) {
+                    converted = parameter.getDefaultValue();
+                } else {
+                    converted = ui.convert(submitted, parameter.getType());
+                }
+                if (converted == null) {
+                    missingParameters.add(parameter);
+                }
+                parameterValues.put(parameter.getName(), converted);
             }
-            Object converted;
-            if (StringUtils.isEmpty(submitted)) {
-                converted = parameter.getDefaultValue();
-            } else {
-                converted = ui.convert(submitted, parameter.getType());
-            }
-            if (converted == null) {
-                missingParameters.add(parameter);
-            }
-            parameterValues.put(parameter.getName(), converted);
         }
         if (missingParameters.size() > 0) {
             request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, ui.message("reportingui.runReport.missingParameter"));

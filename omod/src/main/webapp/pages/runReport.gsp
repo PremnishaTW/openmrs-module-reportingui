@@ -157,7 +157,18 @@ ${ ui.includeFragment("appui", "messages", [ codes: [
                 <% reportDefinition.parameters.each { %>
                 <p>
                     <% if (it.collectionType) { %>
-                        Parameters of type = collection are not yet implemented
+                    <% if (it.type == org.openmrs.Concept) { %>
+                        ${ui.includeFragment("uicommons", "concept", [
+                            formFieldName    : "parameterValues[" + it.name + "]",
+                            label            : it.labelOrName,
+                            style            : "checkbox",
+                            multiselect      : true,
+                            initialValue     : it.defaultValue,
+                            questionConceptId: it.widgetConfiguration.getProperty("questionConceptId")
+                        ])}
+                        <% } else { %>
+                            Parameters of type = collection are not yet implemented
+                        <% } %>
                     <% } else if (it?.widgetConfiguration?.uiframeworkFragmentProvider) { %>
                         ${ ui.includeFragment(it.widgetConfiguration.uiframeworkFragmentProvider, it.widgetConfiguration.uiframeworkFragment, [
                                 formFieldName: "parameterValues[" + it.name + "]",
@@ -177,11 +188,13 @@ ${ ui.includeFragment("appui", "messages", [ codes: [
                                 initialValue: it.defaultValue ?: sessionContext.sessionLocation
                         ])}
                     <% } else if (it.type == org.openmrs.Concept) { %>
-                    ${ ui.includeFragment("uicommons", "concept", [
-                            formFieldName: "parameterValues[" + it.name + "]",
-                            label: it.labelOrName,
-                            initialValue: it.defaultValue,
-                            questionConceptId: it.widgetConfiguration.getProperty("questionConceptId")i
+                    ${ui.includeFragment("uicommons", "concept", [
+                            formFieldName    : "parameterValues[" + it.name + "]",
+                            label            : it.labelOrName,
+                            style            : "dropdown",
+                            multiselect      : false,
+                            initialValue     : it.defaultValue,
+                            questionConceptId: it.widgetConfiguration.getProperty("questionConceptId")
                     ])}
                     <% } else { %>
                         Unknown parameter type: ${ it.type }
