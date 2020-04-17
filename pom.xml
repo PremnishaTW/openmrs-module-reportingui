@@ -39,7 +39,7 @@
         <webservicesrestModuleVersion>2.5</webservicesrestModuleVersion>
         <uiframeworkModuleVersion>3.2</uiframeworkModuleVersion>
         <appuiModuleVersion>1.0</appuiModuleVersion>
-        <uicommonsModuleVersion>1.1</uicommonsModuleVersion>
+        <uicommonsModuleVersion>2.13.0-SNAPSHOT</uicommonsModuleVersion>
         <serializationxstreamModuleVersion>0.2.7</serializationxstreamModuleVersion>
         <appframeworkModuleVersion>2.0</appframeworkModuleVersion>
         <calculationModuleVersion>1.0</calculationModuleVersion>

@@ -176,6 +176,13 @@ ${ ui.includeFragment("appui", "messages", [ codes: [
                                 label: it.labelOrName,
                                 initialValue: it.defaultValue ?: sessionContext.sessionLocation
                         ])}
+                    <% } else if (it.type == org.openmrs.Concept) { %>
+                    ${ ui.includeFragment("uicommons", "concept", [
+                            formFieldName: "parameterValues[" + it.name + "]",
+                            label: it.labelOrName,
+                            initialValue: it.defaultValue,
+                            questionConceptId: it.widgetConfiguration.getProperty("questionConceptId")i
+                    ])}
                     <% } else { %>
                         Unknown parameter type: ${ it.type }
                     <% } %>
